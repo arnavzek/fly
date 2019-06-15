@@ -1,0 +1,98 @@
+<head>
+	<style type="text/css">
+
+
+		body{
+			width: auto;
+			/*width: 300vw;*/
+			margin: 0;
+		}
+		section{
+	height: 100%;
+	width: 100vw;
+	float: left;
+	text-align: center;
+	font-size: 20vw;
+	color: #fff;
+		}
+
+		section:first-child{
+			background: #111;
+		}
+
+		section:nth-child(2){
+			background: tomato;
+		}
+
+		section:nth-child(3){
+			background: steelblue;
+		}
+	</style>
+</head>
+
+<body>
+	
+	<section>chats</section>
+	<section>contacts</section>
+	<section>Images</section>
+
+</body>
+
+<script>
+
+	//animate it
+				// we just need to update destination x and y position based on scale
+			// ha ha not needed
+			// var x = -( (((destination.width)/2)+destination.x) )+(window.innerWidth/2)
+	
+
+
+	//duration is creating bug
+
+	var prv = {s:1,x:0,y:0}
+
+	function fly(element,duration,eal) {
+		
+		if (typeof element == 'string') element = document.querySelector(element)
+		if (element[0]) element = element[0]
+		gizmo = document.body
+
+		//zoom out
+		// window.scrollTo(0,0); 
+		// gizmo.style['transform'] = ''
+	
+		// if (gizmo.style['transition-duration'] == ''){
+			gizmo.style['transition-duration'] = duration+'s'
+			gizmo.style['transition-timing-function'] = 'cubic-bezier(0.55, 0.06, 0.68, 0.19)'
+			zoomin()
+		// }else{
+
+		// 	setTimeout(zoomin,(duration*1000)+500)
+		// 	//budge fix is adding 500ms delay
+		// }
+		
+		function zoomin(){
+			var destination = element.getBoundingClientRect()
+
+			var s = window.innerWidth/destination.width;
+			var x = -destination.x
+			var y = -destination.y
+
+			prv.s = prv.s*s
+			prv.x = prv.x + x
+			prv.y = prv.y+y
+
+			gizmo.style['transform-origin'] = 0+'px '+0+'px';
+			gizmo.style.transform = ' scale('+prv.s+') translateX('+prv.x+'px)  translateY('+prv.y+'px)';
+			console.log(prv.s,prv.x,prv.y)
+		}
+		
+	}
+
+ // fly('.xpdopen',1)
+ fly(document.getElementsByTagName('section')[1],1)
+
+
+</script>
+
+

@@ -27,49 +27,118 @@
 		section:nth-child(3){
 			background: steelblue;
 		}
+
+		section#app section{
+			width: 100vw;
+			height: 10vw;
+			font-size: 5vw;
+		}
+
 	</style>
 </head>
 
-<body>
+<body navigation='dot' direction='horizontal'>
 	
-	<section>chats</section>
-	<section>contacts</section>
-	<section>Images</section>
+	<section id="Apps" direction='vertical' type='independent' >
+		<section>A</section>
+		<section>B</section>
+		<section>C</section>
+		<section>D</section>
+	</section>
+
+	<section id="Dashboard">Dashboard</section>
+	<section id="search">search</section>
 
 </body>
 
 <script>
 
-	//animate it
-				// we just need to update destination x and y position based on scale
-			// ha ha not needed
-			// var x = -( (((destination.width)/2)+destination.x) )+(window.innerWidth/2)
-	
+	//how to add navigation
+
+	//option A instantiate navigation, no!
+
+	//option B add add swipe feature -> tik
 
 
-	//duration is creating bug
+	// detect swipe
 
 	var prv = {s:1,x:0,y:0}
+	var active_page = document.body.children[0];
+	var config = {duration:0.5}
 
-	function fly(element,duration,eal) {
+	function navigate_locally(command,element){
 		
+		if(!element) element = active_page
+		
+		switch(command.toLocaleLowerCase()) {
+		  case 'next':
+		    element = element.nextElementSibling
+		    active_page = element
+
+		    break;
+		  case 'previous':
+		    element = element.previousElementSibling
+		    active_page = element
+		    break;
+		  case 'jump':
+		    active_page = element
+		    break;
+		  default:
+		  	console.log('no changes')
+		}
+
+		history.pushState({},"", active_page.getAttribute('id') );
+		onpushstate()
+	}
+
+	//bind on push state to main funtion
+	//mark it in the url
+
+	var onpushstate = function(){
+	    	var urlPages = document.location.href.split("/")
+	    	var page = urlPages[urlPages.length-1]
+	        fly( '#'+page )
+	        console.log( page )
+	        document.title = page;
+	}
+
+
+	window.onpopstate = onpushstate
+
+
+	//swipe is the way to navigate 
+
+	function swipe(element,direction){
+		//element which was at the swipe start position
+		// if element has the direction 
+		// if not do it on the parent
+	}
+
+
+	//when to transform body and when to transform locally
+	function fly(element){
+		console.log(element)
+		if (element.trim() == '#'){
+			element = document.body.children[0]
+			active_page = element
+		} 
 		if (typeof element == 'string') element = document.querySelector(element)
 		if (element[0]) element = element[0]
-		gizmo = document.body
 
-		//zoom out
-		// window.scrollTo(0,0); 
-		// gizmo.style['transform'] = ''
-	
-		// if (gizmo.style['transition-duration'] == ''){
-			gizmo.style['transition-duration'] = duration+'s'
-			gizmo.style['transition-timing-function'] = 'cubic-bezier(0.55, 0.06, 0.68, 0.19)'
-			zoomin()
-		// }else{
+		
+		var live_parent = document.body
 
-		// 	setTimeout(zoomin,(duration*1000)+500)
-		// 	//budge fix is adding 500ms delay
-		// }
+
+		if (active_page.parentElement.getAttribute('type') == 'independent') live_parent = active_page.parentElement
+
+
+
+		//check parent if it is independent then set parent: if inde then no scaling but if not then the body will scale and translate
+
+		
+		live_parent.style['transition-duration'] = config.duration+'s'
+		live_parent.style['transition-timing-function'] = 'cubic-bezier(0.55, 0.06, 0.68, 0.19)'
+		zoomin()
 		
 		function zoomin(){
 			var destination = element.getBoundingClientRect()
@@ -82,15 +151,15 @@
 			prv.x = prv.x + x
 			prv.y = prv.y+y
 
-			gizmo.style['transform-origin'] = 0+'px '+0+'px';
-			gizmo.style.transform = ' scale('+prv.s+') translateX('+prv.x+'px)  translateY('+prv.y+'px)';
+			live_parent.style['transform-origin'] = 0+'px '+0+'px';
+			live_parent.style.transform = ' scale('+prv.s+') translateX('+prv.x+'px)  translateY('+prv.y+'px)';
 			console.log(prv.s,prv.x,prv.y)
 		}
 		
 	}
 
  // fly('.xpdopen',1)
- fly(document.getElementsByTagName('section')[1],1)
+ // fly('next')
 
 
 </script>

@@ -4,7 +4,7 @@
 
 		body{
 			width: auto;
-			/*width: 300vw;*/
+			width: 300vw;
 			margin: 0;
 		}
 		section{
@@ -37,13 +37,14 @@
 	</style>
 </head>
 
-<body navigation='dot' direction='horizontal'>
+<body navigation='dot' deck='x' scroll='y'>
 	
-	<section id="Apps" direction='vertical' type='independent' >
-		<section>A</section>
-		<section>B</section>
-		<section>C</section>
-		<section>D</section>
+	<!-- switch and scroll is defined for it's child -->
+	<section id="Apps" deck='y' scroll='x'>
+		<p>lorem ipsum</p>
+		<p>lorem ipsum</p>
+		<p>lorem ipsum</p>
+		<p>lorem ipsum</p>
 	</section>
 
 	<section id="Dashboard">Dashboard</section>
@@ -66,11 +67,11 @@
 	var active_page = document.body.children[0];
 	var config = {duration:0.5}
 
-	function navigate_locally(command,element){
+	function move(command,element,steps){
 		
 		if(!element) element = active_page
 		
-		switch(command.toLocaleLowerCase()) {
+		switch(command.toLowerCase()) {
 		  case 'next':
 		    element = element.nextElementSibling
 		    active_page = element
@@ -91,6 +92,11 @@
 		onpushstate()
 	}
 
+	function open(element){
+		history.pushState({},"", element.getAttribute('id') );
+		onpushstate()
+	}
+
 	//bind on push state to main funtion
 	//mark it in the url
 
@@ -101,8 +107,7 @@
 	        console.log( page )
 	        document.title = page;
 	}
-
-
+	
 	window.onpopstate = onpushstate
 
 
@@ -112,11 +117,47 @@
 		//element which was at the swipe start position
 		// if element has the direction 
 		// if not do it on the parent
+
+		//decide to deck or scroll
 	}
 
 
+	var _C = document.body
+	let x0 = null;
+
+	function unify(e) { return e.changedTouches ? e.changedTouches[0] : e };
+	function lock(e) { x0 = unify(e).clientX };
+
+
+	function move(e) {
+	  if(x0 || x0 === 0) {
+	    let dx = unify(e).clientX - x0, s = Math.sign(dx);
+	    //check if vertical or horizontal
+		//do scroll or deck
+	    x0 = null
+	  }
+	};
+
+
+
+	function scroll(){
+		// find the closet element var element = 
+		
+		var dir = 'y'
+		var par = active_page
+		var offset = par.getAttribute('offset')
+
+		par.getAttribute('scroll')  == 'x'? dir = 'x':null
+
+
+		par.style['transition-duration'] = config.duration+'s'
+		par.style['transition-timing-function'] = 'cubic-bezier(0.55, 0.06, 0.68, 0.19)'
+
+		par.style['transform'] = 'translate'+dir.toUpperCase()+'('+element.getBoundingClientRect()[dir.toLowerCase()]+')'
+	}
+
 	//when to transform body and when to transform locally
-	function fly(element){
+	function deck(element){
 		console.log(element)
 		if (element.trim() == '#'){
 			element = document.body.children[0]
@@ -158,9 +199,10 @@
 		
 	}
 
- // fly('.xpdopen',1)
- // fly('next')
-
+	_C.addEventListener('mousedown', lock, false);
+	_C.addEventListener('touchstart', lock, false);
+	_C.addEventListener('mouseup', move, false);
+	_C.addEventListener('touchend', move, false);
 
 </script>
 

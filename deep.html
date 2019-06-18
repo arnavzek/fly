@@ -37,37 +37,59 @@
 	</style>
 </head>
 
-<body navigation='dot' deck='x' scroll='y'>
+<body navigation='fixed' deck='x' scroll='y'  >
 	
 	<!-- switch and scroll is defined for it's child -->
-	<section id="Apps" deck='y' scroll='x'>
-		<p>lorem ipsum</p>
-		<p>lorem ipsum</p>
-		<p>lorem ipsum</p>
-		<p>lorem ipsum</p>
+	<section id="Apps" deck='y' scroll='x' logo='Apps.svg'>
+		<p>f you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your artic</p><br>
+		<p>f you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your artic</p><br>
+		<p>f you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your artic</p><br>
+		<p>f you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your artic</p>
 	</section>
 
-	<section id="Dashboard">Dashboard</section>
-	<section id="search">search</section>
+	<section id="Dashboard" logo='Dashboard.svg' >Dashboard</section>
+	<section id="Search" logo='search.svg'>search</section>
 
 </body>
 
 <script>
 
-	//how to add navigation
-
-	//option A instantiate navigation, no!
-
-	//option B add add swipe feature -> tik
 
 
-	// detect swipe
+	var _C = document.body
+
+	function setup(){
+		// fixed or free
+		//add a navigation pannel to the of body
+
+		//starting point element
+	}
+
+	function open(element){
+		history.pushState({},"", element.getAttribute('id') );
+		onpushstate()
+	}
+	//bind on push state to main funtion
+	//mark it in the url
+	var onpushstate = function(){
+	    	var urlPages = document.location.href.split("/")
+	    	var page = urlPages[urlPages.length-1]
+	        deck( '#'+page )
+	        console.log( page )
+	        document.title = page;
+	}
+	window.onpopstate = onpushstate
+
+
+
+	//instantiate navigation bar in top level top, so that it will be uneffected by the chnages to interface
+
 
 	var prv = {s:1,x:0,y:0}
 	var active_page = document.body.children[0];
 	var config = {duration:0.5}
 
-	function move(command,element,steps){
+	function slide(command,element,steps){
 		
 		if(!element) element = active_page
 		
@@ -88,67 +110,49 @@
 		  	console.log('no changes')
 		}
 
+		console.log( element.getAttribute('id') )
 		history.pushState({},"", active_page.getAttribute('id') );
 		onpushstate()
 	}
-
-	function open(element){
-		history.pushState({},"", element.getAttribute('id') );
-		onpushstate()
-	}
-
-	//bind on push state to main funtion
-	//mark it in the url
-
-	var onpushstate = function(){
-	    	var urlPages = document.location.href.split("/")
-	    	var page = urlPages[urlPages.length-1]
-	        fly( '#'+page )
-	        console.log( page )
-	        document.title = page;
-	}
 	
-	window.onpopstate = onpushstate
-
-
-	//swipe is the way to navigate 
-
-	function swipe(element,direction){
-		//element which was at the swipe start position
-		// if element has the direction 
-		// if not do it on the parent
-
-		//decide to deck or scroll
-	}
-
-
-	var _C = document.body
-	let x0 = null;
+	let swipeMovement = {x:null,y:null};
 
 	function unify(e) { return e.changedTouches ? e.changedTouches[0] : e };
-	function lock(e) { x0 = unify(e).clientX };
+	function lock(e) {
+	 swipeMovement.x = unify(e).clientX 
+	 swipeMovement.y = unify(e).clientY
+	};
 
 
 	function move(e) {
-	  if(x0 || x0 === 0) {
-	    let dx = unify(e).clientX - x0, s = Math.sign(dx);
-	    //check if vertical or horizontal
-		//do scroll or deck
-	    x0 = null
+	  if(swipeMovement.x !== null || swipeMovement.y !== null) {
+	    let dx = unify(e).clientX - swipeMovement.x, dy = unify(e).clientY - swipeMovement.y ;
+	    var direction = {value:dx, d:'x'}
+	    if (dx < dy) direction = {value:dy, d:'y'}
+	    var s = Math.sign(direction.value)
+
+
+		if ( direction.d == active_page.getAttribute('scroll') ){
+			var scroll_along = 'height'
+			if (direction.d == 'y') scroll_along = 'width'
+			var close_index = active_page.getBoundingClientRect()[direction.d]/active_page.children[0].getBoundingClientRect()[scroll_along]
+			scroll(active_page.children[ Math.round(close_index) ])
+		}else{
+			s == -1? slide('next'):slide('previous')
+		}
+		console.log(swipeMovement,dx,dy,s,direction,active_page.getAttribute('scroll'))
+
+		swipeMovement = {x:null,y:null}
 	  }
 	};
 
 
 
-	function scroll(){
-		// find the closet element var element = 
+	function scroll(element){
 		
-		var dir = 'y'
-		var par = active_page
+		var par = element.parentElement
+		var dir = par.getAttribute('scroll')
 		var offset = par.getAttribute('offset')
-
-		par.getAttribute('scroll')  == 'x'? dir = 'x':null
-
 
 		par.style['transition-duration'] = config.duration+'s'
 		par.style['transition-timing-function'] = 'cubic-bezier(0.55, 0.06, 0.68, 0.19)'
@@ -156,8 +160,13 @@
 		par.style['transform'] = 'translate'+dir.toUpperCase()+'('+element.getBoundingClientRect()[dir.toLowerCase()]+')'
 	}
 
-	//when to transform body and when to transform locally
+	//deck will transform globally
 	function deck(element){
+
+
+
+		//offset for navigation bar
+
 		console.log(element)
 		if (element.trim() == '#'){
 			element = document.body.children[0]
@@ -166,19 +175,11 @@
 		if (typeof element == 'string') element = document.querySelector(element)
 		if (element[0]) element = element[0]
 
-		
-		var live_parent = document.body
 
+		// if (active_page.parentElement.getAttribute('type') == 'independent') live_parent = active_page.parentElement
 
-		if (active_page.parentElement.getAttribute('type') == 'independent') live_parent = active_page.parentElement
-
-
-
-		//check parent if it is independent then set parent: if inde then no scaling but if not then the body will scale and translate
-
-		
-		live_parent.style['transition-duration'] = config.duration+'s'
-		live_parent.style['transition-timing-function'] = 'cubic-bezier(0.55, 0.06, 0.68, 0.19)'
+		_C.style['transition-duration'] = config.duration+'s'
+		_C.style['transition-timing-function'] = 'cubic-bezier(0.55, 0.06, 0.68, 0.19)'
 		zoomin()
 		
 		function zoomin(){
@@ -192,8 +193,8 @@
 			prv.x = prv.x + x
 			prv.y = prv.y+y
 
-			live_parent.style['transform-origin'] = 0+'px '+0+'px';
-			live_parent.style.transform = ' scale('+prv.s+') translateX('+prv.x+'px)  translateY('+prv.y+'px)';
+			_C.style['transform-origin'] = 0+'px '+0+'px';
+			_C.style.transform = ' scale('+prv.s+') translateX('+prv.x+'px)  translateY('+prv.y+'px)';
 			console.log(prv.s,prv.x,prv.y)
 		}
 		

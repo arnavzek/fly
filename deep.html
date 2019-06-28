@@ -39,31 +39,44 @@
 
 <body navigation='fixed' deck='x' scroll='y'  >
 	
-	<!-- switch and scroll is defined for it's child -->
-	<section id="Apps" deck='y' scroll='x' logo='Apps.svg'>
-		<p>f you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your artic</p><br>
-		<p>f you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your artic</p><br>
-		<p>f you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your artic</p><br>
-		<p>f you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your artic</p>
-	</section>
 
-	<section id="Dashboard" logo='Dashboard.svg' >Dashboard</section>
-	<section id="Search" logo='search.svg'>search</section>
+	<div id='world'>
+		<!-- switch and scroll is defined for it's child -->
+		<section id="Apps" deck='y' scroll='x' logo='Apps.svg'>
+			<p>f you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your artic</p><br>
+			<p>f you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your artic</p><br>
+			<p>f you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your artic</p><br>
+			<p>f you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your articf you like GeeksforGeeks and would like to contribute, you can also write an article using contribute.geeksforgeeks.org or mail your artic</p>
+		</section>
+
+		<section id="Dashboard" logo='Dashboard.svg' >Dashboard</section>
+		<section id="Search" logo='search.svg'>search</section>
+	</div>
 
 </body>
 
 <script>
 
+	
+	setup('#world')
 
+	function setup(element){
 
-	var _C = document.body
+		if (typeof element == 'string') element = document.querySelector(element)
 
-	function setup(){
+		window._C = element
+
+		
+		window.active_page = element.children[0]
+
+		// div.createElement()
 		// fixed or free
 		//add a navigation pannel to the of body
 
 		//starting point element
 	}
+
+	
 
 	function open(element){
 		history.pushState({},"", element.getAttribute('id') );
@@ -86,32 +99,33 @@
 
 
 	var prv = {s:1,x:0,y:0}
-	var active_page = document.body.children[0];
+	var active_page = document.body.children[0].children[0];//fix
 	var config = {duration:0.5}
 
 	function slide(command,element,steps){
 		
+
 		if(!element) element = active_page
 		
+		var des = element.parentElement.children[0]
+
 		switch(command.toLowerCase()) {
 		  case 'next':
-		    element = element.nextElementSibling
-		    active_page = element
+		    if(element.nextElementSibling) des = element.nextElementSibling
 
 		    break;
 		  case 'previous':
-		    element = element.previousElementSibling
-		    active_page = element
+		    if (element.previousElementSibling) des = element.previousElementSibling
 		    break;
 		  case 'jump':
-		    active_page = element
+		    des = element
 		    break;
 		  default:
 		  	console.log('no changes')
 		}
 
-		console.log( element.getAttribute('id') )
-		history.pushState({},"", active_page.getAttribute('id') );
+		console.log(command, des.getAttribute('id') )
+		history.pushState({},"", des.getAttribute('id') );
 		onpushstate()
 	}
 	
@@ -119,13 +133,16 @@
 
 	function unify(e) { return e.changedTouches ? e.changedTouches[0] : e };
 	function lock(e) {
+	e.preventDefault()
 	 swipeMovement.x = unify(e).clientX 
 	 swipeMovement.y = unify(e).clientY
 	};
 
+	// active_page null bug
 
 	function move(e) {
 	  if(swipeMovement.x !== null || swipeMovement.y !== null) {
+	  	e.preventDefault()
 	    let dx = unify(e).clientX - swipeMovement.x, dy = unify(e).clientY - swipeMovement.y ;
 	    var direction = {value:dx, d:'x'}
 	    if (dx < dy) direction = {value:dy, d:'y'}
@@ -150,6 +167,7 @@
 
 	function scroll(element){
 		
+		//
 		var par = element.parentElement
 		var dir = par.getAttribute('scroll')
 		var offset = par.getAttribute('offset')
@@ -168,13 +186,18 @@
 		//offset for navigation bar
 
 		console.log(element)
-		if (element.trim() == '#'){
-			element = document.body.children[0]
-			active_page = element
-		} 
-		if (typeof element == 'string') element = document.querySelector(element)
+
+		if (typeof element == 'string'){
+			if (element.trim() == '#'){
+				element = _C.children[0]
+			}else{
+				element = document.querySelector(element)
+			}
+		}
+
 		if (element[0]) element = element[0]
 
+		active_page = element
 
 		// if (active_page.parentElement.getAttribute('type') == 'independent') live_parent = active_page.parentElement
 
@@ -200,10 +223,10 @@
 		
 	}
 
-	_C.addEventListener('mousedown', lock, false);
-	_C.addEventListener('touchstart', lock, false);
-	_C.addEventListener('mouseup', move, false);
-	_C.addEventListener('touchend', move, false);
+	document.body.addEventListener('mousedown', lock, false);
+	document.body.addEventListener('touchstart', lock, false);
+	document.body.addEventListener('mouseup', move, false);
+	document.body.addEventListener('touchend', move, false);
 
 </script>
 
